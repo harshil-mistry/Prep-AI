@@ -1,0 +1,162 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ExamPrep AI - Last-Minute Study Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+    <header class="header">
+        <nav class="nav container">
+            <div class="logo">
+                <img src="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/icons/book-open.svg" alt="ExamPrep AI Logo"
+                    class="logo-icon">
+                <span>ExamPrep AI</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#testimonials">Testimonials</a>
+                <a href="{% url 'login' %}" class="btn btn-primary" style="color: white;">Login</a>
+            </div>
+            <button class="mobile-menu-btn">
+                <img src="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/icons/menu.svg" alt="Menu">
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Ace Your Exams with AI-Powered Study Assistant</h1>
+                    <p>Upload your study materials, get instant summaries, and chat with our AI to clarify concepts.
+                        Perfect for last-minute exam preparation!</p>
+                    <div class="hero-buttons">
+                        <a href="{% url 'login' %}" class="btn btn-primary">Start Studying</a>
+                        <a href="#how-it-works" class="btn btn-secondary">Learn More</a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg"
+                        alt="Student studying with laptop" class="floating">
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <h2>Why Choose ExamPrep AI?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <img src="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/icons/file-text.svg"
+                            alt="Document icon" class="feature-icon">
+                        <h3>Smart Document Analysis</h3>
+                        <p>Upload PDFs and PPTs to get instant summaries of key topics and concepts.</p>
+                    </div>
+                    <div class="feature-card">
+                        <img src="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/icons/message-circle.svg"
+                            alt="Chat icon" class="feature-icon">
+                        <h3>AI Chat Assistant</h3>
+                        <p>Ask questions and get immediate clarification on complex topics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <img src="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/icons/clock.svg" alt="Clock icon"
+                            class="feature-icon">
+                        <h3>Last-Minute Ready</h3>
+                        <p>Optimize your study time with focused summaries and quick reviews.</p>
+                    </div>
+                    <div class="feature-card">
+                        <img src="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/icons/history.svg"
+                            alt="History icon" class="feature-icon">
+                        <h3>Study History</h3>
+                        <p>Keep track of your study sessions and revisit important concepts.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works">
+            <div class="container">
+                <h2>How It Works</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Upload Materials</h3>
+                        <p>Share your lecture notes, slides, or study guides in PDF or PPT format.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Get Summaries</h3>
+                        <p>Receive AI-generated summaries highlighting key concepts and topics.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Chat & Learn</h3>
+                        <p>Ask questions and deepen your understanding through interactive chat.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="testimonials" class="testimonials">
+            <div class="container">
+                <h2>Student Success Stories</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+                            alt="Student portrait" class="testimonial-image">
+                        <p>"ExamPrep AI helped me understand complex topics quickly. I passed my organic chemistry exam
+                            with flying colors!"</p>
+                        <h4>Sarah Johnson</h4>
+                        <span>Chemistry Major</span>
+                    </div>
+                    <div class="testimonial-card">
+                        <img src="https://images.pexels.com/photos/1222271/pexels-photo-1222271.jpeg"
+                            alt="Student portrait" class="testimonial-image">
+                        <p>"The instant summaries and AI chat were lifesavers during my finals week. Highly
+                            recommended!"</p>
+                        <h4>Michael Chen</h4>
+                        <span>Computer Science Student</span>
+                    </div>
+                    <div class="testimonial-card">
+                        <img src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg"
+                            alt="Student portrait" class="testimonial-image">
+                        <p>"This tool made my last-minute exam preparation so much more effective. It's like having a
+                            personal tutor!"</p>
+                        <h4>Emma Davis</h4>
+                        <span>Biology Student</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2>Ready to Ace Your Exams?</h2>
+                <p>Join thousands of students who are already studying smarter with ExamPrep AI.</p>
+                <a href="app.html" class="btn btn-primary">Start Studying Now</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2024 ExamPrep AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+
+</html>

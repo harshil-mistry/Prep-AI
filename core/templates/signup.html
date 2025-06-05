@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - ExamPrep AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/auth.css' %}">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <img src="https://cdn.jsdelivr.net/npm/lucide-static@0.344.0/icons/book-open.svg" alt="ExamPrep AI Logo" class="auth-logo">
+                <h1>Create Account</h1>
+                <p>Join with fellow students for preparing smarter</p>
+            </div>
+            
+            <form class="auth-form" id="signupForm" onsubmit="return validateForm(event)" method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="form-error">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <div class="form-group">
+                    <label for="{{ form.username.id_for_label }}">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <small class="form-error">{{ form.username.errors.0 }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.email.id_for_label }}">Email</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <small class="form-error">{{ form.email.errors.0 }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.password1.id_for_label }}">Password</label>
+                    {{ form.password1 }}
+                    <small class="form-hint">Minimum 8 characters</small>
+                    {% if form.password1.errors %}
+                        <small class="form-error">{{ form.password1.errors.0 }}</small>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="{{ form.password2.id_for_label }}">Confirm Password</label>
+                    {{ form.password2 }}
+                    <small class="form-error" id="passwordError"></small>
+                    {% if form.password2.errors %}
+                        <small class="form-error">{{ form.password2.errors.0 }}</small>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary w-full flex-all" id="submitBtn">Sign Up</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="signin.html">Sign In</a></p>
+                <a href="index.html" class="back-home">← Back to Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function validatePasswordMatch() {
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            const error = document.getElementById('passwordError');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (confirmPassword.value && password.value !== confirmPassword.value) {
+                error.textContent = 'Passwords do not match';
+                error.style.display = 'block';
+                submitBtn.disabled = true;
+                return false;
+                console.log('Passwords do not match');
+            } else {
+                error.textContent = '';
+                error.style.display = 'none';
+                submitBtn.disabled = false;
+                return true;
+                console.log('Passwords match');
+            }
+        }
+
+        function validateForm(event) {
+            if (validatePasswordMatch()) {
+                return true;
+            }
+            return false;
+        }
+    </script>
+</body>
+</html>
