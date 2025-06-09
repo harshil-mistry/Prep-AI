@@ -63,8 +63,8 @@
             </form>
             
             <div class="auth-footer">
-                <p>Already have an account? <a href="signin.html">Sign In</a></p>
-                <a href="index.html" class="back-home">← Back to Home</a>
+                <p>Already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+                <a href="{% url 'index' %}" class="back-home">← Back to Home</a>
             </div>
         </div>
     </div>
