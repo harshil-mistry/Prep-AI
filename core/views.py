@@ -2,7 +2,7 @@ import os
 import fitz  # PyMuPDF
 from pptx import Presentation
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -13,6 +13,12 @@ import google.generativeai as genai
 import dotenv
 import json
 import uuid
+from django.template.loader import render_to_string
+import markdown2
+import tempfile
+import pdfkit
+from xhtml2pdf import pisa
+from io import BytesIO
 
 dotenv.load_dotenv()
 API = os.getenv("GOOGLE_API_KEY")
@@ -208,7 +214,7 @@ def chatbot_view(request, chat_id=None):
             messages = chat.messages.all()
             return JsonResponse({
                 'response': response_text,
-                'messages': list(messages.values('sender', 'text', 'attachment', 'created_at'))
+                'messages': list(messages.values('sender', 'text', 'attachment', 'created_at', 'id'))
             })
 
     else:
@@ -264,3 +270,79 @@ def delete_chat(request, chat_id):
         raise PermissionDenied("You don't have permission to delete this chat.")
     chat.delete()
     return JsonResponse({'success': True})
+
+@login_required
+def download_message_pdf(request, message_id):
+    try:
+        message = Message.objects.get(id=message_id, chat__user=request.user)
+        html_content = markdown2.markdown(message.text)
+        full_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <style>
+                body {{ font-family: Arial, sans-serif; padding: 20px; }}
+            </style>
+        </head>
+        <body>
+            {html_content}
+        </body>
+        </html>
+        """
+
+        # Create PDF in memory
+        pdf_buffer = BytesIO()
+        pisa_status = pisa.CreatePDF(full_html, dest=pdf_buffer)
+
+        if pisa_status.err:
+            return HttpResponse("Error generating PDF", status=500)
+
+        # Return PDF as response
+        response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="PrepAI_Notes.pdf"'
+        return response
+        # # Create a temporary HTML file
+        # with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as temp_html:
+        #     temp_html.write(html_content.encode('utf-8'))
+        #     temp_html_path = temp_html.name
+
+        # print(f"Temporary HTML file created at: {temp_html_path}")
+        
+        # # Create a temporary PDF file
+        # with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_pdf:
+        #     temp_pdf_path = temp_pdf.name
+        
+        # print(f"Temporary PDF file created at: {temp_pdf_path}")
+
+        # # Convert HTML to PDF using pdfkit
+        # options = {
+        #     'page-size': 'A4',
+        #     'margin-top': '20mm',
+        #     'margin-right': '20mm',
+        #     'margin-bottom': '20mm',
+        #     'margin-left': '20mm',
+        #     'encoding': 'UTF-8',
+        #     'no-outline': None
+        # }
+        
+        # pdfkit.from_file(temp_html_path, temp_pdf_path, options=options)
+        
+        # # Read the PDF file
+        # with open(temp_pdf_path, 'rb') as pdf_file:
+        #     pdf_content = pdf_file.read()
+        
+        # # Clean up temporary files
+        # os.unlink(temp_html_path)
+        # os.unlink(temp_pdf_path)
+        
+        # # Create the response
+        # response = HttpResponse(pdf_content, content_type='application/pdf')
+        # response['Content-Disposition'] = f'attachment; filename="PrepAI_Notes.pdf"'
+        
+        # return response
+        
+    except Message.DoesNotExist:
+        return HttpResponse('Message not found', status=404)
+    except Exception as e:
+        return HttpResponse(f'Error generating PDF: {str(e)}', status=500)

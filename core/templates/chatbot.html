@@ -956,13 +956,40 @@
         .message-attachments .attachment-item span {
             color: var(--message-llm-text);
         }
+
+        /* Download PDF button styles */
+        .download-pdf-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--button-bg);
+            color: var(--button-text);
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 8px;
+        }
+
+        .download-pdf-btn:hover {
+            background: var(--button-hover-bg);
+        }
+
+        .download-pdf-btn svg {
+            width: 16px;
+            height: 16px;
+        }
     </style>
 </head>
 
 <body>
     <div class="sidebar">
         <div class="logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-open mr-2\">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-book-open mr-2\">
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
             </svg>
@@ -973,7 +1000,7 @@
                 stroke="currentColor" width="20" height="20">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </svg>
-            
+
             New Study Session
         </button>
         <h3>Recent Sessions</h3>
@@ -1062,6 +1089,15 @@
                     <div class="message {{ message.sender }}">
                         {% if message.sender == 'PrepAI' %}
                         <div class="markdown-body">{{ message.text|markdown|safe }}</div>
+                        <button class="download-pdf-btn" data-message-id="{{ message.id }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3">
+                                </path>
+                            </svg>
+                            Download PDF
+                        </button>
                         {% else %}
                         {{ message.text }}
                         {% if message.attachment %}
@@ -1121,9 +1157,6 @@
             senderSpan.textContent = senderClass.includes('You') ? 'You' : 'PrepAI'; // Set sender name based on class
             const timestampSpan = document.createElement('span');
             timestampSpan.className = 'timestamp';
-            // Note: Timestamp ideally comes from backend for accuracy
-            // For simplicity here, we'll leave it blank or add client time if needed
-            // In a real-time app, backend response should include timestamp.
 
             infoDiv.appendChild(senderSpan);
             infoDiv.appendChild(timestampSpan);
@@ -1144,7 +1177,7 @@
         }
 
         // Function to display a single message
-        function displayMessage(sender, text, attachment = null, isLatestMessage = false, timestamp = null) {
+        function displayMessage(sender, text, attachment = null, isLatestMessage = false, timestamp = null, messageId = null) {
             const chatMessages = document.getElementById('chat-messages');
             if (!chatMessages) return; // Guard clause
 
@@ -1152,39 +1185,78 @@
             const messageContentDiv = messageElement.querySelector('.message');
             const timestampSpan = messageElement.querySelector('.timestamp');
 
+            // Set message ID if provided
+            if (messageId) {
+                messageElement.dataset.messageId = messageId;
+            }
+
             // Set the timestamp if provided
             if (timestamp) {
-                // Assuming timestamp is in a format that Date can parse or is already formatted
-                // You might need to adjust formatting based on backend data
                 try {
                     const date = new Date(timestamp);
-                    // Format the time (e.g., 11:05 AM)
                     timestampSpan.textContent = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 } catch (e) {
                     console.error('Invalid timestamp format:', timestamp, e);
-                    timestampSpan.textContent = ''; // Or show a default
+                    timestampSpan.textContent = '';
                 }
             } else if (sender === 'You' && !isLatestMessage) {
-                // For older user messages rendered from history that might not have timestamp passed explicitly (fallback)
-                // This case might not be necessary if backend always sends timestamp
-                timestampSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Use current time as fallback
+                timestampSpan.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
 
             if (sender === 'PrepAI') {
                 const markdownDiv = messageContentDiv.querySelector('.markdown-body');
-                // For PrepAI messages, we'll use the typing animation only for the latest message
                 if (typeof marked !== 'undefined') {
                     if (isLatestMessage) {
-                        // Start with empty content for latest message
                         markdownDiv.innerHTML = '';
-                        // Animate the text word by word
                         animateTyping(text, markdownDiv);
                     } else {
-                        // For older messages, display immediately
                         markdownDiv.innerHTML = marked.parse(text);
                     }
+
+                    // Add download PDF button for LLM messages
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'download-pdf-btn';
+                    downloadBtn.setAttribute('data-message-id', messageId);
+                    downloadBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        Download as PDF
+                    `;
+
+                    // Add click handler for download
+                    downloadBtn.addEventListener('click', async function () {
+                        if (!messageElement.dataset.messageId) {
+                            console.error('Message ID not found');
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(`/download_message_pdf/${messageElement.dataset.messageId}/`, {
+                                method: 'GET'
+                            });
+
+                            if (response.ok) {
+                                const blob = await response.blob();
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement('a');
+                                a.href = url;
+                                a.download = `PrepAI_Notes.pdf`;
+                                document.body.appendChild(a);
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                document.body.removeChild(a);
+                            } else {
+                                console.error('Failed to download PDF');
+                            }
+                        } catch (error) {
+                            console.error('Error downloading PDF:', error);
+                        }
+                    });
+
+                    messageContentDiv.appendChild(downloadBtn);
                 } else {
-                    markdownDiv.textContent = text; // Fallback if marked.js is not loaded
+                    markdownDiv.textContent = text;
                 }
             } else {
                 messageContentDiv.textContent = text;
@@ -1347,6 +1419,40 @@
             if (headerThemeToggle) {
                 headerThemeToggle.addEventListener('click', toggleTheme);
             }
+
+            // Handle Download PDF button click
+            document.querySelectorAll('.download-pdf-btn').forEach(downloadBtn => {
+                const messageElement = downloadBtn.closest('[data-message-id]');
+
+                downloadBtn.addEventListener('click', async function () {
+                    if (!messageElement || !messageElement.dataset.messageId) {
+                        console.error('Message ID not found');
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/download_message_pdf/${messageElement.dataset.messageId}/`, {
+                            method: 'GET'
+                        });
+
+                        if (response.ok) {
+                            const blob = await response.blob();
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `PrepAI_Notes.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                        } else {
+                            console.error('Failed to download PDF');
+                        }
+                    } catch (error) {
+                        console.error('Error downloading PDF:', error);
+                    }
+                });
+            });
 
             // Handle new chat button click (show modal)
             if (newChatBtn) {
@@ -1668,12 +1774,12 @@
                                 const isLatestMessage = index === data.messages.length - 1;
                                 // Pass attachment information and timestamp from the message object
                                 const attachmentFilenames = msg.attachment ? String(msg.attachment) : null;
-                                displayMessage(msg.sender, msg.text, attachmentFilenames, isLatestMessage, msg.created_at); // Pass msg.created_at
+                                displayMessage(msg.sender, msg.text, attachmentFilenames, isLatestMessage, msg.created_at, msg.id); // Pass msg.id
                             });
                         } else if (data.response) {
                             // If backend returns only the latest LLM response, we might not have a timestamp for it here
                             // The backend response structure would need to include it.
-                            displayMessage('PrepAI', data.response, null, true, data.created_at); // Add LLM response with animation
+                            displayMessage('PrepAI', data.response, null, true, data.created_at, data.id); // Add message_id
                         }
 
                         // Scroll to bottom again after adding message
