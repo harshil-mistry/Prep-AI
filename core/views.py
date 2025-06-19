@@ -275,7 +275,8 @@ def delete_chat(request, chat_id):
 def download_message_pdf(request, message_id):
     try:
         message = Message.objects.get(id=message_id, chat__user=request.user)
-        html_content = markdown2.markdown(message.text)
+        html_content = markdown2.markdown(message.text, safe_mode='escape', extras=['fenced-code-blocks', 'tables', 'code-friendly'])
+
         full_html = f"""
         <!DOCTYPE html>
         <html>
@@ -302,45 +303,6 @@ def download_message_pdf(request, message_id):
         response = HttpResponse(pdf_buffer.getvalue(), content_type='application/pdf')
         response['Content-Disposition'] = 'attachment; filename="PrepAI_Notes.pdf"'
         return response
-        # # Create a temporary HTML file
-        # with tempfile.NamedTemporaryFile(suffix='.html', delete=False) as temp_html:
-        #     temp_html.write(html_content.encode('utf-8'))
-        #     temp_html_path = temp_html.name
-
-        # print(f"Temporary HTML file created at: {temp_html_path}")
-        
-        # # Create a temporary PDF file
-        # with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_pdf:
-        #     temp_pdf_path = temp_pdf.name
-        
-        # print(f"Temporary PDF file created at: {temp_pdf_path}")
-
-        # # Convert HTML to PDF using pdfkit
-        # options = {
-        #     'page-size': 'A4',
-        #     'margin-top': '20mm',
-        #     'margin-right': '20mm',
-        #     'margin-bottom': '20mm',
-        #     'margin-left': '20mm',
-        #     'encoding': 'UTF-8',
-        #     'no-outline': None
-        # }
-        
-        # pdfkit.from_file(temp_html_path, temp_pdf_path, options=options)
-        
-        # # Read the PDF file
-        # with open(temp_pdf_path, 'rb') as pdf_file:
-        #     pdf_content = pdf_file.read()
-        
-        # # Clean up temporary files
-        # os.unlink(temp_html_path)
-        # os.unlink(temp_pdf_path)
-        
-        # # Create the response
-        # response = HttpResponse(pdf_content, content_type='application/pdf')
-        # response['Content-Disposition'] = f'attachment; filename="PrepAI_Notes.pdf"'
-        
-        # return response
         
     except Message.DoesNotExist:
         return HttpResponse('Message not found', status=404)
