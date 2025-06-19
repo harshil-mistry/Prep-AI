@@ -1149,7 +1149,7 @@
                 {% endfor %}
             </div>
             <div class="chat-input-area">
-                <div class="suggested-prompts">
+                <div class="suggested-prompts" style="display: none;">
                     <div class="prompt-chip">Generate practice questions</div>
                     <div class="prompt-chip">Summarize key concepts</div>
                     <div class="prompt-chip">Create study schedule</div>
@@ -1257,7 +1257,7 @@
                     downloadBtn.setAttribute('data-message-id', messageId);
                     downloadBtn.innerHTML = `
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3">
                         </svg>
                         Download as PDF
                     `;
@@ -1815,9 +1815,14 @@
                                 displayMessage(msg.sender, msg.text, attachmentFilenames, isLatestMessage, msg.created_at, msg.id); // Pass msg.id
                             });
                         } else if (data.response) {
-                            // If backend returns only the latest LLM response, we might not have a timestamp for it here
-                            // The backend response structure would need to include it.
+                            console.log('Response received'); // Debug log
+                            console.log('Prompts:', data.suggested_prompts); // Debug log
                             displayMessage('PrepAI', data.response, null, true, data.created_at, data.id); // Add message_id
+                        }
+
+                        // Update suggested prompts if present in response
+                        if ('suggested_prompts' in data) {
+                            updateSuggestedPrompts(data.suggested_prompts);
                         }
 
                         // Scroll to bottom again after adding message
@@ -1839,7 +1844,35 @@
                 });
             }
 
-            // Handle suggested prompts
+            // Function to update suggested prompts
+            function updateSuggestedPrompts(prompts) {
+                const promptsDiv = document.querySelector('.suggested-prompts');
+                if (!promptsDiv) return;
+                promptsDiv.innerHTML = '';
+                if (Array.isArray(prompts) && prompts.length > 0) {
+                    if (promptsDiv.style.display === 'none') {
+                        promptsDiv.style.display = 'flex'; // Show the prompts div if it was hidden
+                        promptsDiv.style.gap = '12px';
+                        promptsDiv.style.padding = '0 32px 12px';
+                        promptsDiv.style.flexWrap = 'wrap';
+                    }
+                    prompts.forEach(prompt => {
+                        const chip = document.createElement('div');
+                        chip.className = 'prompt-chip';
+                        chip.textContent = prompt;
+                        chip.addEventListener('click', function() {
+                            const messageInput = document.querySelector('#chat-form input[name="message"]');
+                            if (messageInput) {
+                                messageInput.value = this.textContent;
+                                messageInput.focus();
+                            }
+                        });
+                        promptsDiv.appendChild(chip);
+                    });
+                }
+            }
+
+            // Initial static prompt chips event listeners (for first load)
             document.querySelectorAll('.prompt-chip').forEach(chip => {
                 chip.addEventListener('click', function() {
                     const messageInput = document.querySelector('#chat-form input[name="message"]');

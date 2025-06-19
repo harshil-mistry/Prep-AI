@@ -191,18 +191,43 @@ def chatbot_view(request, chat_id=None):
                 "- Generate questions or study tips aligned with the exam context\n"
                 "- Maintain an encouraging and supportive tone throughout\n"
                 "- Always focus on helping the student succeed in their exams\n\n"
+                "- After providing your main response, generate only 3 concise follow-up prompts that are relevant to the user’s query.\n"
+                "- Before listing the prompts, insert the keyword: 'suggestedpromptsstartshere' (on a new line).\n"
+                "- Separate each follow-up prompt with the keyword: 'newprompt'.\n"
+                "- Each prompt should strictly be 5–8 words long.\n"
+                "- Example prompts include: 'Generate practice questions', 'Summarize everything', 'Explain with examples'.\n"
+                "- Only generate prompts if they make sense in the context. If the user is simply greeting, thanking, or saying goodbye, return only the keyword: 'noprompts' instead of listing prompts.\n"
+                "- Ensure prompts are helpful, engaging, and encourage deeper exploration of the topic.\n"
                 "Always keep your explanations student-friendly, focused, and aligned with the exam goal.\n\n"
                 "Now respond helpfully to assist the student with their exam preparation!"
             )
 
             response = model.generate_content(prompt)
             response_text = response.text
+
+            main_response = ''
+            suggested_prompts = []
+
+            # Split based on the marker
+            if 'suggestedpromptsstartshere' in response_text:
+                main_response, prompt_section = response_text.split('suggestedpromptsstartshere', 1)
+                main_response = main_response.strip()
+
+                prompt_section = prompt_section.strip()
+                if prompt_section == 'noprompts':
+                    suggested_prompts = []
+                else:
+                    # Split using 'newprompt' and clean individual prompts
+                    suggested_prompts = [p.strip() for p in prompt_section.split('newprompt') if p.strip()]
+            else:
+                main_response = response_text
+                suggested_prompts = []
             
             # Create LLM message
             Message.objects.create(
                 chat=chat,
                 sender='PrepAI',
-                text=response_text
+                text=main_response
             )
             
             # Update chat title if it's the first message
@@ -212,8 +237,10 @@ def chatbot_view(request, chat_id=None):
             
             # Return updated messages for frontend
             messages = chat.messages.all()
+            print(suggested_prompts)
             return JsonResponse({
-                'response': response_text,
+                'response': main_response,
+                'suggested_prompts': suggested_prompts,
                 'messages': list(messages.values('sender', 'text', 'attachment', 'created_at', 'id'))
             })
 
