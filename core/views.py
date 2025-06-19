@@ -283,7 +283,18 @@ def download_message_pdf(request, message_id):
         <head>
             <meta charset="UTF-8">
             <style>
-                body {{ font-family: Arial, sans-serif; padding: 20px; }}
+                body {{ 
+                    font-family: Arial, sans-serif; 
+                    padding: 20px;
+                    font-size: 12pt;
+                }}
+                h1 {{ font-size: 24pt; margin-top: 20px; margin-bottom: 10px; }}
+                h2 {{ font-size: 20pt; margin-top: 18px; margin-bottom: 8px; }}
+                h3 {{ font-size: 16pt; margin-top: 16px; margin-bottom: 6px; }}
+                h4 {{ font-size: 14pt; margin-top: 14px; margin-bottom: 4px; }}
+                p {{ font-size: 12pt; line-height: 1.4; margin-bottom: 10px; }}
+                ul, ol {{ font-size: 12pt; margin-left: 20px; }}
+                li {{ margin-bottom: 5px; }}
             </style>
         </head>
         <body>
