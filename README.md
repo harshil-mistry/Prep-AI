@@ -69,7 +69,7 @@ Built using Django, Google Gemini, and a clean HTML/CSS/JS frontend, PrepAI crea
 # 1. Clone the repository 
 ```bash 
 git clone https://github.com/harshil-mistry/Prep-AI 
-cd prepai 
+cd Prep-AI
 ```
 
 # 2. Create a virtual environment and activate it 
