@@ -220,7 +220,7 @@ def chatbot_view(request, chat_id=None):
                     # Split using 'newprompt' and clean individual prompts
                     suggested_prompts = [p.strip() for p in prompt_section.split('newprompt') if p.strip()]
             else:
-                main_response = response_text
+                main_response = response_text.split('noprompts', 1)[0].strip()
                 suggested_prompts = []
             
             # Create LLM message
@@ -325,6 +325,7 @@ def download_message_pdf(request, message_id):
             </style>
         </head>
         <body>
+            <h1 class="text-align:center;">PrepAI Notes</h1>
             {html_content}
         </body>
         </html>
