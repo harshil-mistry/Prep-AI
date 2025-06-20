@@ -66,39 +66,40 @@ Built using Django, Google Gemini, and a clean HTML/CSS/JS frontend, PrepAI crea
 
 ## ⚙️ How to Run Locally 
 
-# 1. Clone the repository 
+### 1. Clone the repository 
 ```bash 
 git clone https://github.com/harshil-mistry/Prep-AI 
 cd Prep-AI
 ```
 
-# 2. Create a virtual environment and activate it 
+### 2. Create a virtual environment and activate it 
 ```bash
 python -m venv env 
 source env/bin/activate # On Windows: env\Scripts\activate 
 ```
 
-# 3. Install dependencies 
+### 3. Install dependencies 
 ```bash
 pip install -r requirements.txt 
 ```
-# 4. Configure the env files from env example file 
+
+### 4. Configure the env files from env example file 
 >Note: There are two .env files to be configured
 > 1. In the core app
 > 2. In the prepai project
 
-# 5. Apply migrations 
+### 5. Apply migrations 
 ```bash
 python manage.py makemigrations 
 python manage.py migrate 
 ```
 
-# 6. Run the development server 
+### 6. Run the development server 
 ```bash 
 python manage.py runserver 
 ```
 
-# 7. Open your browser and visit: 
+### 7. Open your browser and visit: 
 > http://localhost:8000
 
 ---
