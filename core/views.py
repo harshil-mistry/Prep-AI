@@ -1,5 +1,5 @@
 import os
-import fitz  # PyMuPDF
+import fitz
 from pptx import Presentation
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse, HttpResponse
@@ -24,7 +24,7 @@ dotenv.load_dotenv()
 API = os.getenv("GOOGLE_API_KEY")
 
 genai.configure(api_key=API)
-model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20")
+model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20") 
 
 def extract_text_from_pdf(file):
     text = ""
