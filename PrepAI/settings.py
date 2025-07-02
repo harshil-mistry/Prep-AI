@@ -30,7 +30,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'prep-ai-sq31.onrender.com/'
+    'prep-ai-sq31.onrender.com',
+    'localhost',
+    '127.0.0.1'
 ]
 
 
