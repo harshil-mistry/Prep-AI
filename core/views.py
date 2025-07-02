@@ -11,12 +11,9 @@ from .models import Chat, Message
 from .utils import require_auth, generate_auth_token
 import google.generativeai as genai
 import dotenv
-import json
 import uuid
 from django.template.loader import render_to_string
 import markdown2
-import tempfile
-import pdfkit
 from xhtml2pdf import pisa
 from io import BytesIO
 
