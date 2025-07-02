@@ -47,8 +47,7 @@ def verify_request_origin(request):
     allowed_origins = [
         'http://localhost:8000',
         'http://127.0.0.1:8000',
-        # Add your production domain here
-        # 'https://yourdomain.com'
+        'https://prep-ai-sq31.onrender.com'
     ]
     
     # Check if the request is coming from an allowed origin
