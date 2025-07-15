@@ -21,7 +21,7 @@ dotenv.load_dotenv()
 API = os.getenv("GOOGLE_API_KEY")
 
 genai.configure(api_key=API)
-model = genai.GenerativeModel("gemini-2.5-flash-preview-05-20") 
+model = genai.GenerativeModel("gemini-2.5-pro") 
 
 def extract_text_from_pdf(file):
     text = ""
